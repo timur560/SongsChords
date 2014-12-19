@@ -5,7 +5,8 @@
  */
 package songschords;
 
-import javax.swing.JFrame;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,7 +16,10 @@ import javax.swing.JOptionPane;
 public class SongEditorFrame extends javax.swing.JFrame {
 
     private MainFrame parentFrame = null;
-    private String filename = "";
+    private final String defaultTitle = "Edit Song";
+    
+    private String author = "", title = "";
+    private boolean edit = false;
     
     /**
      * Creates new form NewSongFrame
@@ -24,10 +28,16 @@ public class SongEditorFrame extends javax.swing.JFrame {
     public SongEditorFrame(MainFrame parentFrame) {
         initComponents();
         this.parentFrame = parentFrame;
+
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
-    public void show(String filename) {
-        this.filename = filename;
+    public void show(String author, String title, boolean edit) {
+        System.out.println(author + "   " + title);
+        this.author = author;
+        this.title = title;
+        this.edit = edit;
         setVisible(true);
     }
     
@@ -50,6 +60,8 @@ public class SongEditorFrame extends javax.swing.JFrame {
         saveButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         helpButton = new javax.swing.JButton();
+
+        setTitle("Edit Song");
 
         jLabel1.setText("Author:");
 
@@ -91,10 +103,8 @@ public class SongEditorFrame extends javax.swing.JFrame {
                         .addComponent(cancelButton)
                         .addGap(12, 12, 12)
                         .addComponent(helpButton))
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(0, 381, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -150,6 +160,7 @@ public class SongEditorFrame extends javax.swing.JFrame {
             if (result.status) {
                 parentFrame.updateSongsTree();
                 JOptionPane.showMessageDialog(this, "Song saved success", "Save", JOptionPane.INFORMATION_MESSAGE);
+                setTitle(defaultTitle + " | " + author + " - " + title);
             } else {
                 JOptionPane.showMessageDialog(this, result.message, "Error", JOptionPane.ERROR_MESSAGE);
             }

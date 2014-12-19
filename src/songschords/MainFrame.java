@@ -5,6 +5,8 @@
  */
 package songschords;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.event.TreeSelectionEvent;
@@ -17,8 +19,8 @@ import javax.swing.tree.*;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    private final SongEditorFrame songEditorFrame;
-    
+    private final SongEditorFrame songEditor;
+
     /**
      * Creates new form MainFrame
      */
@@ -40,9 +42,12 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         
-        songEditorFrame = new SongEditorFrame(this);
+        songEditor = new SongEditorFrame(this);
         
         songTextPane.setText("<html><body>Select song or add your own</body></html>");
+
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
     public void updateSongsTree() {
@@ -50,7 +55,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         DefaultTreeModel songsTreeModel = (DefaultTreeModel) songsTree.getModel();
         
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode("Songs");
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode("Songs chords");
 
         DefaultMutableTreeNode authorNode;
         
@@ -83,6 +88,9 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         songsTree = new javax.swing.JTree();
+        jToolBar1 = new javax.swing.JToolBar();
+        addButton = new javax.swing.JButton();
+        removeButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         songTextPane = new javax.swing.JEditorPane();
@@ -96,9 +104,15 @@ public class MainFrame extends javax.swing.JFrame {
         aboutMenuItem = new javax.swing.JMenuItem();
 
         editMenuItemPopup.setText("Edit...");
+        editMenuItemPopup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editMenuItemPopupActionPerformed(evt);
+            }
+        });
         songsTreePopup.add(editMenuItemPopup);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Songs Chords");
 
         jSplitPane1.setDividerLocation(220);
 
@@ -111,15 +125,39 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(songsTree);
 
+        jToolBar1.setFloatable(false);
+        jToolBar1.setRollover(true);
+
+        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add.png"))); // NOI18N
+        addButton.setFocusable(false);
+        addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(addButton);
+
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.png"))); // NOI18N
+        removeButton.setFocusable(false);
+        removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(removeButton);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))
         );
 
         jSplitPane1.setLeftComponent(jPanel1);
@@ -190,24 +228,43 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newSongMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSongMenuItemActionPerformed
-        songEditorFrame.show("");
+        songEditor.show();
     }//GEN-LAST:event_newSongMenuItemActionPerformed
 
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         JOptionPane.showMessageDialog(this, "by timur560\n(c)2014", "About", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
+    private int treeX = 0, treeY = 0;
+    
     private void songsTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_songsTreeMousePressed
-        if (evt.isPopupTrigger()) {
-//            int selRow = songsTree.getRowForLocation(evt.getX(), evt.getY());
-//            TreePath selPath = songsTree.getPathForLocation(evt.getX(), evt.getY());
-
-            songsTreePopup.show(songsTree, evt.getX(), evt.getY());
+        treeX = evt.getX();
+        treeY = evt.getY();
+        songsTree.getPathForLocation(treeX, treeY);
+        if (evt.isPopupTrigger() && songsTree.getPathForLocation(treeX, treeY).getPathCount() == 3) {
+            songsTreePopup.show(songsTree, treeX, treeY);
+            songsTree.setSelectionPath(songsTree.getPathForLocation(treeX, treeY));
         }
     }//GEN-LAST:event_songsTreeMousePressed
 
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        songEditor.setVisible(true);
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void editMenuItemPopupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMenuItemPopupActionPerformed
+        if (songsTree.getPathForLocation(treeX, treeY).getPathCount() == 3) {
+            songEditor.show(
+                songsTree.getPathForLocation(treeX, treeY).getPathComponent(1).toString(),
+                songsTree.getPathForLocation(treeX, treeY).getPathComponent(2).toString(),
+                true
+            );
+        }
+        
+    }//GEN-LAST:event_editMenuItemPopupActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton addButton;
     private javax.swing.JMenuItem editMenuItemPopup;
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JMenu jMenu1;
@@ -219,8 +276,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem newSongMenuItem;
     private javax.swing.JMenuItem quitMenuItem;
+    private javax.swing.JButton removeButton;
     private javax.swing.JEditorPane songTextPane;
     private javax.swing.JTree songsTree;
     private javax.swing.JPopupMenu songsTreePopup;
