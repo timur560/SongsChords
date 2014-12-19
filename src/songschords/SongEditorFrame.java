@@ -34,10 +34,14 @@ public class SongEditorFrame extends javax.swing.JFrame {
     }
 
     public void show(String author, String title, boolean edit) {
-        System.out.println(author + "   " + title);
         this.author = author;
         this.title = title;
         this.edit = edit;
+        
+        authorTextField.setText(author);
+        titleTextField.setText(title);
+        songTextArea.setText(SongsProcessor.getSongs().get(author).get(title)[1]);
+        
         setVisible(true);
     }
     
@@ -142,24 +146,29 @@ public class SongEditorFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        String author = authorTextField.getText().trim();
-        String title = titleTextField.getText().trim();
+        String newAuthor = authorTextField.getText().trim();
+        String newTitle = titleTextField.getText().trim();
         String song = songTextArea.getText().trim();
         
         SongResult result = null;
         
-        if (SongsProcessor.exists(author, title)) {
-            if (JOptionPane.showConfirmDialog(this, "Song with title\"" + title + "\" already exists. Overwrite?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                result = SongsProcessor.editSong(SongsProcessor.getFilenameByAuthorAndTitle(author, title), author, title, song);
+        if (edit) {
+            result = SongsProcessor.editSong(SongsProcessor.getFilenameByAuthorAndTitle(author, title), newAuthor, newTitle, song);
+        } else if (SongsProcessor.exists(newAuthor, newTitle)) {
+            if (JOptionPane.showConfirmDialog(this, "Song with title\"" + newTitle + "\" already exists. Overwrite?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                result = SongsProcessor.editSong(SongsProcessor.getFilenameByAuthorAndTitle(author, title), newAuthor, newTitle, song);
             }
         } else {
-            result = SongsProcessor.editSong("", author, title, song);
+            result = SongsProcessor.editSong("", newAuthor, newTitle, song);
         }
         
         if (result != null) {
             if (result.status) {
                 parentFrame.updateSongsTree();
                 JOptionPane.showMessageDialog(this, "Song saved success", "Save", JOptionPane.INFORMATION_MESSAGE);
+                author = newAuthor;
+                title = newTitle;
+                edit = true;
                 setTitle(defaultTitle + " | " + author + " - " + title);
             } else {
                 JOptionPane.showMessageDialog(this, result.message, "Error", JOptionPane.ERROR_MESSAGE);

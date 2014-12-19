@@ -44,13 +44,17 @@ public class MainFrame extends javax.swing.JFrame {
         
         songEditor = new SongEditorFrame(this);
         
-        songTextPane.setText("<html><body>Select song or add your own</body></html>");
+        resetSongTextPane();
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
-    public void updateSongsTree() {
+    public final void resetSongTextPane() {
+        songTextPane.setText("<html><body style=\"margin:10px;\">Select song or add your own</body></html>");
+    }
+    
+    public final void updateSongsTree() {
         Map<String, Map<String, String[]>> songs = SongsProcessor.getSongs(true);
         
         DefaultTreeModel songsTreeModel = (DefaultTreeModel) songsTree.getModel();
@@ -70,6 +74,8 @@ public class MainFrame extends javax.swing.JFrame {
         }
         
         songsTreeModel.setRoot(top);
+        
+        resetSongTextPane();
     }
     
     
