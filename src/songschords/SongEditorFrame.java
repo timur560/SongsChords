@@ -33,6 +33,19 @@ public class SongEditorFrame extends javax.swing.JFrame {
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
+    public void newSong() {
+        author = title = "";
+        this.edit = false;
+        
+        authorTextField.setText(author);
+        titleTextField.setText(title);
+        songTextArea.setText("");
+        
+        setTitle("Edit Song");
+
+        setVisible(true);
+    }
+    
     public void show(String author, String title, boolean edit) {
         this.author = author;
         this.title = title;
@@ -41,6 +54,8 @@ public class SongEditorFrame extends javax.swing.JFrame {
         authorTextField.setText(author);
         titleTextField.setText(title);
         songTextArea.setText(SongsProcessor.getSongs().get(author).get(title)[1]);
+        
+        setTitle("Edit Song | " + author + " : " + title);
         
         setVisible(true);
     }

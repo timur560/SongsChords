@@ -14,7 +14,6 @@ import java.util.Scanner;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,6 +21,10 @@ import javax.swing.JOptionPane;
  */
 public class SongsProcessor {
     private static final String PATH = "./songschords";
+    
+    public static final String HTML_HEADER = "<html><body style=\"margin:10px;font-family:"
+            + "Tahoma,Arial;font-size:12px;\">";
+    public static final String HTML_FOOTER = "</body></html>";
     
     // <[author] <[title], [filename,text]>>
     private static Map<String, Map<String, String[]>> songs = new HashMap<>();
@@ -37,11 +40,19 @@ public class SongsProcessor {
     }
     
     public static final String songText2Html(String songText) {
-        String html = "<html><body>";
-               
-        html += songText.replaceAll("\n", "<br>");
+        String text = "";
+        for (String line : songText.split("\n")) {
+            if (line.indexOf(">") == 0) {
+                line = line.substring(1).replaceAll("([^ |	]+)", "<span style=\"color:#33B537\"><b>$1</b></span>");
+            }
+            text += line + "<br>";
+        }
         
-        html += "</body></html>";
+        String html = HTML_HEADER;
+               
+        html += text;
+        
+        html += HTML_FOOTER;
         return html;
     }
     
