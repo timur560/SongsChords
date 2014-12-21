@@ -1,0 +1,20 @@
+Creating song.
+
+1) Enter author or choose from already existed authors list.
+
+2) Enter song title.
+
+3) Enter song text. To define row with chords start line with ">" symbol. Chords should be separated by spaces. E.g.:
+
+>C
+I'm looking at you through the glass
+>D7
+Don't know how much time has passed
+>Em
+Oh, God it feels like forever
+>Em
+But, no one ever tells you
+>C
+That forever feels like home
+>D7 Em
+Sitting all alone inside your head
