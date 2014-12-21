@@ -20,3 +20,10 @@ public class SongsChords {
     }
     
 }
+
+class H {
+    public static final Object dump(Object value) {
+        System.out.println(value);
+        return value;
+    }
+}

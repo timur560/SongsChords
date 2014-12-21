@@ -6,6 +6,7 @@
 package songschords;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.Map;
 import java.util.TimerTask;
@@ -22,6 +23,7 @@ import javax.swing.tree.*;
 public class MainFrame extends javax.swing.JFrame {
 
     private final SongEditorFrame songEditor;
+    private String author, title;
 
     /**
      * Creates new form MainFrame
@@ -39,7 +41,11 @@ public class MainFrame extends javax.swing.JFrame {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) songsTree.getLastSelectedPathComponent();
                 if (node != null && node.getLevel() == 2) {
                     DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
-                    songTextPane.setText(SongsProcessor.songText2Html(SongsProcessor.getSongTextByAuthorAndTitle(parentNode.toString(), node.toString())));
+                    author = parentNode.toString();
+                    title = node.toString();
+                    updateSongText();
+//                    songTextScrollPane.getVerticalScrollBar().setValue(0);
+//                    System.out.println(songTextScrollPane.getVerticalScrollBar().getValue());
                 }
             }
         });
@@ -51,9 +57,17 @@ public class MainFrame extends javax.swing.JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
-
+    
+    public final void updateSongText() {
+        if (SongsProcessor.getSongTextByAuthorAndTitle(author, title) != null) {
+            songTextPane.setText(SongsProcessor.songText2Html(SongsProcessor.getSongTextByAuthorAndTitle(author, title)));
+        } else {
+            resetSongTextPane();
+        }
+    }
+    
     public final void resetSongTextPane() {
-        songTextPane.setText(SongsProcessor.HTML_HEADER + "Select song or add your own" + SongsProcessor.HTML_FOOTER);
+        songTextPane.setText(SongsProcessor.getHtmlHeader() + "Select song or add your own" + SongsProcessor.HTML_FOOTER);
     }
     
     public final void updateSongsTree() {
@@ -209,8 +223,12 @@ public class MainFrame extends javax.swing.JFrame {
         speedBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
         speedBox.setSelectedIndex(4);
 
-        fontSizeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
-        fontSizeBox.setSelectedIndex(4);
+        fontSizeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "12", "14", "16", "18", "20", "22", "24", "26" }));
+        fontSizeBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fontSizeBoxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -371,6 +389,11 @@ public class MainFrame extends javax.swing.JFrame {
         timer = new java.util.Timer();
         timer.schedule(new ScrollSongDown(), (11 - Integer.parseInt(speedBox.getSelectedItem().toString())) * 100); // 1 sec
     }//GEN-LAST:event_playButtonActionPerformed
+
+    private void fontSizeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fontSizeBoxActionPerformed
+        SongsProcessor.FONT_SIZE = Integer.parseInt(fontSizeBox.getSelectedItem().toString());
+        updateSongText();
+    }//GEN-LAST:event_fontSizeBoxActionPerformed
 
     java.util.Timer timer = new java.util.Timer();
 

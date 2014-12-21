@@ -22,11 +22,13 @@ import java.util.logging.Logger;
 public class SongsProcessor {
     private static final String PATH = "./songschords";
     
-    public static final String HTML_HEADER = "<html><body style=\"margin:10px;font-family:"
-            + "Tahoma,Arial;font-size:12px;\">";
+    public static final String HTML_HEADER_TPL = "<html><body style=\"margin:10px;font-family:"
+            + "Tahoma,Arial;font-size:%dpx;\">";
     public static final String HTML_FOOTER = "</body></html>";
     
-    // <[author] <[title], [filename,text]>>
+    public static int FONT_SIZE = 12;
+    
+// <[author] <[title], [filename,text]>>
     private static Map<String, Map<String, String[]>> songs = new HashMap<>();
     
     public static final String getSongsPath() {
@@ -39,6 +41,10 @@ public class SongsProcessor {
         return PATH;
     }
     
+    public static final String getHtmlHeader() {
+        return String.format(HTML_HEADER_TPL, FONT_SIZE);
+    }
+    
     public static final String songText2Html(String songText) {
         String text = "";
         for (String line : songText.split("\n")) {
@@ -48,7 +54,7 @@ public class SongsProcessor {
             text += line + "<br>";
         }
         
-        String html = HTML_HEADER;
+        String html = getHtmlHeader();
                
         html += text;
         
