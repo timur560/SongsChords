@@ -213,5 +213,10 @@ public class SongsProcessor {
 
         return ImageIO.read(SongsProcessor.class.getResource("/images/chords/" + chord.replaceAll("#", "w") + "_0.gif"));
     }
+    
+    public static void removeSong(String author, String title) {
+        File songFile = new File(PATH + "/" + getSongs().get(author).get(title)[0]);
+        songFile.delete();
+    }
 }
 

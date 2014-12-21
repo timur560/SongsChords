@@ -32,7 +32,8 @@ import javax.swing.tree.*;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    private final SongEditorFrame songEditor;
+    public final SongEditorFrame songEditor;
+    public static final HelpFrame helpFrame = new HelpFrame();;
     private String author, title;
 
     /**
@@ -50,18 +51,22 @@ public class MainFrame extends javax.swing.JFrame {
             public void valueChanged(TreeSelectionEvent tse) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) songsTree.getLastSelectedPathComponent();
                 if (node != null && node.getLevel() == 2) {
+                    editButton.setEnabled(true); removeButton.setEnabled(true);
+                    
                     DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
                     author = parentNode.toString();
                     title = node.toString();
                     updateSongText();
 //                    songTextScrollPane.getVerticalScrollBar().setValue(0);
 //                    System.out.println(songTextScrollPane.getVerticalScrollBar().getValue());
+                } else {
+                    editButton.setEnabled(false); removeButton.setEnabled(false);
                 }
             }
         });
-        
+
         songEditor = new SongEditorFrame(this);
-        
+
         resetSongTextPane();
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -122,6 +127,7 @@ public class MainFrame extends javax.swing.JFrame {
         songsTree = new javax.swing.JTree();
         jToolBar1 = new javax.swing.JToolBar();
         addButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         songTextScrollPane = new javax.swing.JScrollPane();
@@ -181,10 +187,28 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(addButton);
 
+        editButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/modify.png"))); // NOI18N
+        editButton.setEnabled(false);
+        editButton.setFocusable(false);
+        editButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        editButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(editButton);
+
         removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.png"))); // NOI18N
+        removeButton.setEnabled(false);
         removeButton.setFocusable(false);
         removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
         jToolBar1.add(removeButton);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -351,6 +375,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu2.setText("About");
 
         helpMenuItem.setText("Help...");
+        helpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpMenuItemActionPerformed(evt);
+            }
+        });
         jMenu2.add(helpMenuItem);
 
         aboutMenuItem.setText("About...");
@@ -447,6 +476,27 @@ public class MainFrame extends javax.swing.JFrame {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_songTextPaneMouseReleased
+
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        if (JOptionPane.showConfirmDialog(
+                this, 
+                "Delete song \"" + author + " - " + title + "\"?", 
+                "Confirm", 
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            SongsProcessor.removeSong(author, title);
+            updateSongsTree();
+        }
+    }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) songsTree.getLastSelectedPathComponent();
+        DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
+        songEditor.show(parentNode.toString(), node.toString(), true);
+    }//GEN-LAST:event_editButtonActionPerformed
+
+    private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
+        helpFrame.setVisible(true);
+    }//GEN-LAST:event_helpMenuItemActionPerformed
     
     private void drawChord(String chord) {
         try {
@@ -489,6 +539,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
     private javax.swing.JPanel chordSchemePanel;
+    private javax.swing.JButton editButton;
     private javax.swing.JMenuItem editMenuItemPopup;
     private javax.swing.JComboBox fontSizeBox;
     private javax.swing.JMenuItem helpMenuItem;
