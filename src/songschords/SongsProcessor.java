@@ -5,15 +5,22 @@
  */
 package songschords;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -30,6 +37,18 @@ public class SongsProcessor {
     
 // <[author] <[title], [filename,text]>>
     private static Map<String, Map<String, String[]>> songs = new HashMap<>();
+    
+    public static final Set<String> getAuthorsSet() {
+        return getSongs().keySet();
+    }
+    
+    public static final Set<String> getAuthorTitlesSet(String author) {
+        if (getSongs().get(author) != null) {
+            return getSongs().get(author).keySet();
+        } else {
+            return new HashSet<String>();
+        }
+    }
     
     public static final String getSongsPath() {
         File songsDir = new File(PATH);
@@ -49,7 +68,7 @@ public class SongsProcessor {
         String text = "";
         for (String line : songText.split("\n")) {
             if (line.indexOf(">") == 0) {
-                line = line.substring(1).replaceAll("([^ |	]+)", "<span style=\"color:#33B537\"><b>$1</b></span>");
+                line = line.substring(1).replaceAll("([^ |	]+)", "<a style=\"color:#33B537\" href=\"#\"><b>$1</b></a>");
             }
             text += line + "<br>";
         }
@@ -63,7 +82,7 @@ public class SongsProcessor {
     }
     
     public static final String getSongTextByAuthorAndTitle(String author, String title) {
-        Map<String, Map<String, String[]>> songs = SongsProcessor.getSongs();
+        Map<String, Map<String, String[]>> songs = getSongs();
         
         if (songs.get(author) != null) {
             String songText = songs.get(author).get(title)[1];
@@ -84,13 +103,13 @@ public class SongsProcessor {
         // author2
         // ...
         
-        if (!SongsProcessor.songs.isEmpty() && !refresh) {
+        if (!songs.isEmpty() && !refresh) {
             return songs;
         }
         
         Map<String, Map<String, String[]>> songs = new HashMap<>();
         
-        File songsDir = new File(SongsProcessor.getSongsPath());
+        File songsDir = new File(getSongsPath());
         Scanner scanner;
         String s, author, title, songText;
         
@@ -129,11 +148,11 @@ public class SongsProcessor {
     }
 
     public static final Map<String, Map<String, String[]>> getSongs() {
-        return SongsProcessor.getSongs(false);
+        return getSongs(false);
     }
 
     public static final boolean exists(String author, String title) {
-        Map<String, Map<String, String[]>> songs = SongsProcessor.getSongs();
+        Map<String, Map<String, String[]>> songs = getSongs();
         
         if (songs.get(author) != null && songs.get(author).get(title) != null) {
             return true;
@@ -143,7 +162,7 @@ public class SongsProcessor {
     }
     
     public static final String getFilenameByAuthorAndTitle(String author, String title) {
-        Map<String, Map<String, String[]>> songs = SongsProcessor.getSongs();
+        Map<String, Map<String, String[]>> songs = getSongs();
         
         if (songs.get(author) != null && songs.get(author).get(title) != null) {
             return songs.get(author).get(title)[0];
@@ -161,13 +180,13 @@ public class SongsProcessor {
     }
 
     public static final SongResult editSong(String filename, String author, String title, String song) {
-        SongResult result = SongsProcessor.validateSong(author, title, song);
+        SongResult result = validateSong(author, title, song);
         
         if (!result.status) {
             return result;
         }
 
-        String songsDir = SongsProcessor.getSongsPath();
+        String songsDir = getSongsPath();
         
         if (filename.length() == 0) {
             filename = System.currentTimeMillis() + ".sng";
@@ -183,6 +202,18 @@ public class SongsProcessor {
         }
         
         return new SongResult(true);
+    }
+    
+    public static BufferedImage getChordImage(String chord) throws IOException {
+        /*
+                E -> E_0.gif
+                Em -> E7_0.gif
+                E# -> Ew_0.gif
+                E#m -> Ewm_0.gif
+                E7 -> E7_0.gif
+        */
+
+        return ImageIO.read(SongsProcessor.class.getResource("/images/chords/" + chord.replaceAll("#", "w") + "_0.gif"));
     }
 }
 

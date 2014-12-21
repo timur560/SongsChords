@@ -7,6 +7,7 @@ package songschords;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.Set;
 import javax.swing.JOptionPane;
 
 /**
@@ -34,30 +35,63 @@ public class SongEditorFrame extends javax.swing.JFrame {
     }
 
     public void newSong() {
+        updateAuthorsBox("");
+        updateTitlesBox("", "");
+
         author = title = "";
         this.edit = false;
         
-        authorTextField.setText(author);
-        titleTextField.setText(title);
+        authorsBox.getEditor().setItem("");
+        titlesBox.getEditor().setItem("");
+        
         songTextArea.setText("");
         
         setTitle("Edit Song");
 
+        
         setVisible(true);
     }
-    
+        
     public void show(String author, String title, boolean edit) {
+        updateAuthorsBox(author);
+        updateTitlesBox(author, title);
+
         this.author = author;
         this.title = title;
         this.edit = edit;
         
-        authorTextField.setText(author);
-        titleTextField.setText(title);
+        authorsBox.setSelectedItem(author);
+
         songTextArea.setText(SongsProcessor.getSongs().get(author).get(title)[1]);
         
         setTitle("Edit Song | " + author + " : " + title);
         
+        
         setVisible(true);
+    }
+    
+    public void updateAuthorsBox(String selectedAuthor) {
+        Set<String> authorsSet = SongsProcessor.getAuthorsSet();
+        
+        authorsBox.removeAllItems();
+        
+        for (String author : authorsSet) {
+            authorsBox.addItem(author);
+        }
+        
+        authorsBox.setSelectedItem(selectedAuthor);
+    }
+
+    public void updateTitlesBox(String selectedAuthor, String selectedTitle) {
+        Set<String> titlesSet = SongsProcessor.getAuthorTitlesSet(selectedAuthor);
+        
+        titlesBox.removeAllItems();
+        
+        for (String title : titlesSet) {
+            titlesBox.addItem(title);
+        }
+        
+        titlesBox.setSelectedItem(selectedTitle);
     }
     
     /**
@@ -71,14 +105,14 @@ public class SongEditorFrame extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        authorTextField = new javax.swing.JTextField();
-        titleTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         songTextArea = new javax.swing.JTextArea();
         saveButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         helpButton = new javax.swing.JButton();
+        authorsBox = new javax.swing.JComboBox();
+        titlesBox = new javax.swing.JComboBox();
 
         setTitle("Edit Song");
 
@@ -108,6 +142,10 @@ public class SongEditorFrame extends javax.swing.JFrame {
 
         helpButton.setText("Help");
 
+        authorsBox.setEditable(true);
+
+        titlesBox.setEditable(true);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -130,8 +168,8 @@ public class SongEditorFrame extends javax.swing.JFrame {
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(titleTextField)
-                            .addComponent(authorTextField))))
+                            .addComponent(authorsBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(titlesBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -140,15 +178,15 @@ public class SongEditorFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(authorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(authorsBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(titleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(titlesBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
@@ -161,8 +199,8 @@ public class SongEditorFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        String newAuthor = authorTextField.getText().trim();
-        String newTitle = titleTextField.getText().trim();
+        String newAuthor = authorsBox.getSelectedItem().toString().trim();
+        String newTitle = titlesBox.getSelectedItem().toString().trim();
         String song = songTextArea.getText().trim();
         
         SongResult result = null;
@@ -194,15 +232,12 @@ public class SongEditorFrame extends javax.swing.JFrame {
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         if (JOptionPane.showConfirmDialog(this, "Cancel changes?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            authorTextField.setText("");
-            titleTextField.setText("");
-            songTextArea.setText("");
             setVisible(false);
         }
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField authorTextField;
+    private javax.swing.JComboBox authorsBox;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton helpButton;
     private javax.swing.JLabel jLabel1;
@@ -211,6 +246,6 @@ public class SongEditorFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton saveButton;
     private javax.swing.JTextArea songTextArea;
-    private javax.swing.JTextField titleTextField;
+    private javax.swing.JComboBox titlesBox;
     // End of variables declaration//GEN-END:variables
 }

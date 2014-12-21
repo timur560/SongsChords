@@ -5,15 +5,29 @@
  */
 package songschords;
 
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
 import javax.swing.tree.*;
 
 /**
@@ -58,8 +72,8 @@ public class MainFrame extends javax.swing.JFrame {
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
     
-    public final void updateSongText() {
-        if (SongsProcessor.getSongTextByAuthorAndTitle(author, title) != null) {
+    public void updateSongText() {
+        if (!SongsProcessor.getSongTextByAuthorAndTitle(author, title).isEmpty()) {
             songTextPane.setText(SongsProcessor.songText2Html(SongsProcessor.getSongTextByAuthorAndTitle(author, title)));
         } else {
             resetSongTextPane();
@@ -123,6 +137,8 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         speedBox = new javax.swing.JComboBox();
         fontSizeBox = new javax.swing.JComboBox();
+        chordSchemePanel = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newSongMenuItem = new javax.swing.JMenuItem();
@@ -187,13 +203,18 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE))
         );
 
         jSplitPane1.setLeftComponent(jPanel1);
 
         songTextPane.setEditable(false);
         songTextPane.setContentType("text/html"); // NOI18N
+        songTextPane.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                songTextPaneMouseReleased(evt);
+            }
+        });
         songTextScrollPane.setViewportView(songTextPane);
 
         jLabel1.setText("Speed:");
@@ -224,39 +245,59 @@ public class MainFrame extends javax.swing.JFrame {
         speedBox.setSelectedIndex(4);
 
         fontSizeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "12", "14", "16", "18", "20", "22", "24", "26" }));
+        fontSizeBox.setSelectedIndex(1);
         fontSizeBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fontSizeBoxActionPerformed(evt);
             }
         });
 
+        chordSchemePanel.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout chordSchemePanelLayout = new javax.swing.GroupLayout(chordSchemePanel);
+        chordSchemePanel.setLayout(chordSchemePanelLayout);
+        chordSchemePanelLayout.setHorizontalGroup(
+            chordSchemePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        chordSchemePanelLayout.setVerticalGroup(
+            chordSchemePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        jLabel3.setText("Chord scheme:");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(playButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(stopButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(chordSchemePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addGap(21, 21, 21)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(speedBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(fontSizeBox, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(stopButton, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(speedBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(fontSizeBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jLabel3)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(stopButton)
+                .addGap(3, 3, 3)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(stopButton, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+                    .addComponent(playButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -265,7 +306,10 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fontSizeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(351, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 267, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chordSchemePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -273,10 +317,9 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(songTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                .addGap(1, 1, 1)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1))
+                .addComponent(songTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -329,7 +372,7 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
+            .addComponent(jSplitPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -380,21 +423,55 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_quitMenuItemActionPerformed
 
-    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
-        timer.cancel();
-        timer.purge();
-    }//GEN-LAST:event_stopButtonActionPerformed
+    private void fontSizeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fontSizeBoxActionPerformed
+        SongsProcessor.FONT_SIZE = Integer.parseInt(fontSizeBox.getSelectedItem().toString());
+        updateSongText();
+    }//GEN-LAST:event_fontSizeBoxActionPerformed
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
         timer = new java.util.Timer();
         timer.schedule(new ScrollSongDown(), (11 - Integer.parseInt(speedBox.getSelectedItem().toString())) * 100); // 1 sec
     }//GEN-LAST:event_playButtonActionPerformed
 
-    private void fontSizeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fontSizeBoxActionPerformed
-        SongsProcessor.FONT_SIZE = Integer.parseInt(fontSizeBox.getSelectedItem().toString());
-        updateSongText();
-    }//GEN-LAST:event_fontSizeBoxActionPerformed
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        timer.cancel();
+        timer.purge();
+    }//GEN-LAST:event_stopButtonActionPerformed
 
+    private void songTextPaneMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_songTextPaneMouseReleased
+        try {
+            Element el = getHyperlinkElement(evt);
+            if (el != null) {
+                Document doc = el.getDocument();
+                String chord = doc.getText(el.getStartOffset() , el.getEndOffset() - el.getStartOffset());
+                drawChord(chord);
+            }
+        } catch (BadLocationException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_songTextPaneMouseReleased
+    
+    private void drawChord(String chord) {
+        try {
+            Graphics2D g2 = (Graphics2D) chordSchemePanel.getGraphics();
+            g2.drawImage(SongsProcessor.getChordImage(chord), 0, 0, null);
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private Element getHyperlinkElement(MouseEvent event) {
+        JEditorPane editor = (JEditorPane) event.getSource();
+        int pos = editor.getUI().viewToModel(editor, event.getPoint());
+        if (pos >= 0 && editor.getDocument() instanceof HTMLDocument) {
+            HTMLDocument hdoc = (HTMLDocument) editor.getDocument();
+            Element elem = hdoc.getCharacterElement(pos);
+            if (elem.getAttributes().getAttribute(HTML.Tag.A) != null) {
+                return elem;
+            }
+        }
+        return null;
+    }
     java.util.Timer timer = new java.util.Timer();
 
     class ScrollSongDown extends TimerTask
@@ -410,11 +487,13 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
+    private javax.swing.JPanel chordSchemePanel;
     private javax.swing.JMenuItem editMenuItemPopup;
     private javax.swing.JComboBox fontSizeBox;
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

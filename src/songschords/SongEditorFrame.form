@@ -43,8 +43,8 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="titleTextField" max="32767" attributes="0"/>
-                          <Component id="authorTextField" max="32767" attributes="0"/>
+                          <Component id="authorsBox" max="32767" attributes="0"/>
+                          <Component id="titlesBox" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -58,17 +58,17 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="authorTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="authorsBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="titleTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="titlesBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="431" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="421" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -90,10 +90,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Title:"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="authorTextField">
-    </Component>
-    <Component class="javax.swing.JTextField" name="titleTextField">
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
@@ -134,6 +130,22 @@
     <Component class="javax.swing.JButton" name="helpButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Help"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="authorsBox">
+      <Properties>
+        <Property name="editable" type="boolean" value="true"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="titlesBox">
+      <Properties>
+        <Property name="editable" type="boolean" value="true"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
       </Properties>
     </Component>
   </SubComponents>
