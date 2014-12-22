@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -26,6 +27,13 @@ public class HelpFrame extends javax.swing.JFrame {
     public HelpFrame() {
         initComponents();
 
+        try {
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/guitar.png")));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }

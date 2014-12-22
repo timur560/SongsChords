@@ -118,7 +118,7 @@ public class SongsProcessor {
             }
             
             if (!authorSongsMap.isEmpty()) {
-                songsFiltered.put(author, authorSongsMap);
+                songsFiltered.put(author, new HashMap<>(authorSongsMap));
             }
         }
         

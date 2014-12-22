@@ -10,13 +10,13 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -24,6 +24,7 @@ import javax.swing.JScrollBar;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.html.HTML;
@@ -45,6 +46,13 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+
+        try {
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/guitar.png")));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         updateSongsTree();
         
@@ -61,8 +69,8 @@ public class MainFrame extends javax.swing.JFrame {
                     author = parentNode.toString();
                     title = node.toString();
                     updateSongText();
-//                    songTextScrollPane.getVerticalScrollBar().setValue(0);
-//                    System.out.println(songTextScrollPane.getVerticalScrollBar().getValue());
+
+                    songTextScrollPane.getVerticalScrollBar().setValue(0);
                 } else {
                     editButton.setEnabled(false); removeButton.setEnabled(false);
                 }
@@ -73,6 +81,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         resetSongTextPane();
 
+        DefaultCaret caret = (DefaultCaret)songTextPane.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+        
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
@@ -157,6 +168,8 @@ public class MainFrame extends javax.swing.JFrame {
         removeButton = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         filterTextBox = new javax.swing.JTextField();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
+        importButton = new javax.swing.JButton();
         statusPanel = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -197,6 +210,12 @@ public class MainFrame extends javax.swing.JFrame {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 songsTreeMousePressed(evt);
             }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                songsTreeMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                songsTreeMouseEntered(evt);
+            }
         });
         jScrollPane1.setViewportView(songsTree);
 
@@ -208,7 +227,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
         );
 
         jSplitPane1.setLeftComponent(jPanel1);
@@ -219,15 +238,30 @@ public class MainFrame extends javax.swing.JFrame {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 songTextPaneMouseReleased(evt);
             }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                songTextPaneMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                songTextPaneMouseEntered(evt);
+            }
         });
         songTextScrollPane.setViewportView(songTextPane);
 
         jLabel1.setText("Speed:");
 
         stopButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/stop.png"))); // NOI18N
+        stopButton.setEnabled(false);
         stopButton.setFocusable(false);
         stopButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         stopButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        stopButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                stopButtonMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                stopButtonMouseEntered(evt);
+            }
+        });
         stopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stopButtonActionPerformed(evt);
@@ -238,6 +272,14 @@ public class MainFrame extends javax.swing.JFrame {
         playButton.setFocusable(false);
         playButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         playButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        playButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                playButtonMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                playButtonMouseEntered(evt);
+            }
+        });
         playButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playButtonActionPerformed(evt);
@@ -310,7 +352,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fontSizeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 259, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 263, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chordSchemePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -335,6 +377,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jSplitPane1.setRightComponent(jPanel2);
 
+        jToolBar1.setBorder(null);
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
@@ -384,6 +427,14 @@ public class MainFrame extends javax.swing.JFrame {
         removeButton.setFocusable(false);
         removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        removeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                removeButtonMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                removeButtonMouseEntered(evt);
+            }
+        });
         removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeButtonActionPerformed(evt);
@@ -408,6 +459,27 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(filterTextBox);
+        jToolBar1.add(jSeparator3);
+
+        importButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/load.png"))); // NOI18N
+        importButton.setToolTipText("Import");
+        importButton.setFocusable(false);
+        importButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        importButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        importButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                importButtonMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                importButtonMouseEntered(evt);
+            }
+        });
+        importButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(importButton);
 
         statusPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -553,6 +625,8 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_fontSizeBoxActionPerformed
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
+        stopButton.setEnabled(true);
+        playButton.setEnabled(false);
         timer = new java.util.Timer();
         timer.schedule(new ScrollSongDown(), (11 - Integer.parseInt(speedBox.getSelectedItem().toString())) * 100); // 1 sec
     }//GEN-LAST:event_playButtonActionPerformed
@@ -560,6 +634,8 @@ public class MainFrame extends javax.swing.JFrame {
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
         timer.cancel();
         timer.purge();
+        stopButton.setEnabled(false);
+        playButton.setEnabled(true);
     }//GEN-LAST:event_stopButtonActionPerformed
 
     private void songTextPaneMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_songTextPaneMouseReleased
@@ -589,7 +665,7 @@ public class MainFrame extends javax.swing.JFrame {
         helpFrame.setVisible(true);
     }//GEN-LAST:event_helpMenuItemActionPerformed
 
-    private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuItemActionPerformed
+    private void importFromFile() {
         JFileChooser fc = new JFileChooser();
         int returnVal = fc.showOpenDialog(this);
 
@@ -600,6 +676,10 @@ public class MainFrame extends javax.swing.JFrame {
                 updateSongsTree();
             }
         }
+    }
+    
+    private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuItemActionPerformed
+        importFromFile();
     }//GEN-LAST:event_importMenuItemActionPerformed
 
     private void removeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeMenuItemActionPerformed
@@ -633,6 +713,58 @@ public class MainFrame extends javax.swing.JFrame {
     private void editButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editButtonMouseExited
         statusLabel.setText("Ready");
     }//GEN-LAST:event_editButtonMouseExited
+
+    private void removeButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeButtonMouseEntered
+        statusLabel.setText("Remove song");
+    }//GEN-LAST:event_removeButtonMouseEntered
+
+    private void removeButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeButtonMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_removeButtonMouseExited
+
+    private void songsTreeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_songsTreeMouseEntered
+        statusLabel.setText("Songs tree");
+    }//GEN-LAST:event_songsTreeMouseEntered
+
+    private void songsTreeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_songsTreeMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_songsTreeMouseExited
+
+    private void playButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playButtonMouseEntered
+        statusLabel.setText("Start scrolling");
+    }//GEN-LAST:event_playButtonMouseEntered
+
+    private void playButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playButtonMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_playButtonMouseExited
+
+    private void stopButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopButtonMouseEntered
+        statusLabel.setText("Stop scrolling");
+    }//GEN-LAST:event_stopButtonMouseEntered
+
+    private void stopButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopButtonMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_stopButtonMouseExited
+
+    private void songTextPaneMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_songTextPaneMouseEntered
+        statusLabel.setText("Song text area");
+    }//GEN-LAST:event_songTextPaneMouseEntered
+
+    private void songTextPaneMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_songTextPaneMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_songTextPaneMouseExited
+
+    private void importButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_importButtonMouseEntered
+        statusLabel.setText("Import song from file");
+    }//GEN-LAST:event_importButtonMouseEntered
+
+    private void importButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_importButtonMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_importButtonMouseExited
+
+    private void importButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importButtonActionPerformed
+        importFromFile();
+    }//GEN-LAST:event_importButtonActionPerformed
     
     private void removeSong() {
         if (JOptionPane.showConfirmDialog(
@@ -696,6 +828,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField filterTextBox;
     private javax.swing.JComboBox fontSizeBox;
     private javax.swing.JMenuItem helpMenuItem;
+    private javax.swing.JButton importButton;
     private javax.swing.JMenuItem importMenuItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -709,6 +842,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem newSongMenuItem;

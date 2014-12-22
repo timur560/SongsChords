@@ -7,7 +7,11 @@ package songschords;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 /**
@@ -28,6 +32,14 @@ public class SongEditorFrame extends javax.swing.JFrame {
      */
     public SongEditorFrame(MainFrame parentFrame) {
         initComponents();
+
+        try {
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/images/guitar.png")));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         this.parentFrame = parentFrame;
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
