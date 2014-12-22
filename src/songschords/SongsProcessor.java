@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -211,12 +213,52 @@ public class SongsProcessor {
                 E7 -> E7_0.gif
         */
 
-        return ImageIO.read(SongsProcessor.class.getResource("/images/chords/" + chord.replaceAll("#", "w") + "_0.gif"));
+        URL resource = SongsProcessor.class.getResource("/images/chords/" + chord.replaceAll("#", "w") + "_0.gif");
+        
+        if (resource != null) {
+            return ImageIO.read(resource);
+        } else {
+            return null;
+        }
     }
     
     public static void removeSong(String author, String title) {
         File songFile = new File(PATH + "/" + getSongs().get(author).get(title)[0]);
         songFile.delete();
+    }
+    
+    public static boolean importFile(File inputFile) {
+        try {
+            Scanner scanner;
+            scanner = new Scanner(inputFile);
+            String author = "", title = "", songText = "", s;
+            while (scanner.hasNext()) {
+                s = scanner.nextLine();
+                if (s.indexOf("Author: ") == 0) {
+                    author = title = s.substring(8);
+                } else if (s.indexOf("Title: ") == 0) {
+                    title = s.substring(7);
+                } else {
+                    songText += s + "\n";
+                }
+            }
+
+            if (author.isEmpty() || title.isEmpty() || songText.isEmpty()) {
+                return false;
+            }
+
+            if (getSongs().get(author) != null && getSongs().get(author).get(title) != null) { // song already exists
+                return false;
+            }
+            
+            Files.copy(inputFile.toPath(), new File(PATH + "/" + System.currentTimeMillis() + ".sng").toPath());
+
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(SongsProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
     }
 }
 

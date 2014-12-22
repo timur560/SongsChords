@@ -9,12 +9,15 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
 import javax.swing.event.TreeSelectionEvent;
@@ -144,6 +147,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newSongMenuItem = new javax.swing.JMenuItem();
+        importMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         quitMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -352,7 +356,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenu1.setText("File");
 
-        newSongMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, 0));
+        newSongMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         newSongMenuItem.setText("New Song...");
         newSongMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -360,8 +364,18 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenu1.add(newSongMenuItem);
+
+        importMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
+        importMenuItem.setText("Import...");
+        importMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(importMenuItem);
         jMenu1.add(jSeparator1);
 
+        quitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         quitMenuItem.setText("Quit");
         quitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -497,15 +511,33 @@ public class MainFrame extends javax.swing.JFrame {
     private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
         helpFrame.setVisible(true);
     }//GEN-LAST:event_helpMenuItemActionPerformed
+
+    private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuItemActionPerformed
+        JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            if (!SongsProcessor.importFile(fc.getSelectedFile())) {
+                JOptionPane.showMessageDialog(this, "Cannot import file", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                updateSongsTree();
+            }
+        }
+    }//GEN-LAST:event_importMenuItemActionPerformed
     
     private void drawChord(String chord) {
         try {
-            Graphics2D g2 = (Graphics2D) chordSchemePanel.getGraphics();
-            g2.drawImage(
-                    SongsProcessor.getChordImage(chord),
-                    chordSchemePanel.getWidth() / 2 - 35, 
-                    chordSchemePanel.getHeight() / 2 - 40, 
-                    null);
+            BufferedImage chordImage = SongsProcessor.getChordImage(chord);
+            
+            if (chordImage != null) {
+                Graphics2D g2 = (Graphics2D) chordSchemePanel.getGraphics();
+
+                g2.drawImage(
+                        chordImage,
+                        chordSchemePanel.getWidth() / 2 - 35, 
+                        chordSchemePanel.getHeight() / 2 - 40, 
+                        null);
+            }
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -543,6 +575,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem editMenuItemPopup;
     private javax.swing.JComboBox fontSizeBox;
     private javax.swing.JMenuItem helpMenuItem;
+    private javax.swing.JMenuItem importMenuItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

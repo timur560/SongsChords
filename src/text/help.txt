@@ -18,3 +18,13 @@ But, no one ever tells you
 That forever feels like home
 >D7 Em
 Sitting all alone inside your head
+
+
+Import song.
+
+To import song you can put simple text file with song into "songschords" folder which located in directory with program. Lines with author and song title you can define in such way:
+
+Author: Slipknot
+Title: Snuff
+
+Place these lines in the beginning of file. Also all created songs by program saved in such format, so you can open it in simple text editor like Notepad.
