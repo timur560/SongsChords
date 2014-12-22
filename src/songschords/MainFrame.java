@@ -364,6 +364,14 @@ public class MainFrame extends javax.swing.JFrame {
         editButton.setFocusable(false);
         editButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         editButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                editButtonMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                editButtonMouseEntered(evt);
+            }
+        });
         editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editButtonActionPerformed(evt);
@@ -617,6 +625,14 @@ public class MainFrame extends javax.swing.JFrame {
     private void filterTextBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filterTextBoxMouseExited
         statusLabel.setText("Ready");
     }//GEN-LAST:event_filterTextBoxMouseExited
+
+    private void editButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editButtonMouseEntered
+        statusLabel.setText("Edit song");
+    }//GEN-LAST:event_editButtonMouseEntered
+
+    private void editButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editButtonMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_editButtonMouseExited
     
     private void removeSong() {
         if (JOptionPane.showConfirmDialog(
