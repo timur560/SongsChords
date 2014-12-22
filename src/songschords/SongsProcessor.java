@@ -14,6 +14,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -96,6 +97,34 @@ public class SongsProcessor {
         }
     }
 
+    public static final Map<String, Map<String, String[]>> getSongsFiltered(String filter) {
+        Map<String, Map<String, String[]>> songsFiltered = new HashMap<>();
+        
+        Map<String, String[]> authorSongsMap = new HashMap<>();
+        
+        for (String author : getSongs().keySet()) {
+            if (author.contains(filter)) {
+                songsFiltered.put(author, getSongs().get(author));
+                continue;
+            }
+
+            authorSongsMap.clear();
+            
+            for (String title : getSongs().get(author).keySet()) {
+                if (title.contains(filter)) {
+                    authorSongsMap.put(title, getSongs().get(author).get(title));
+                    continue;
+                }
+            }
+            
+            if (!authorSongsMap.isEmpty()) {
+                songsFiltered.put(author, authorSongsMap);
+            }
+        }
+        
+        return songsFiltered;
+    }
+    
     public static final Map<String, Map<String, String[]>> getSongs(boolean refresh) {
         // author1
         //  song1 - text

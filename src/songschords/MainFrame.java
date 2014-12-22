@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -89,7 +90,17 @@ public class MainFrame extends javax.swing.JFrame {
     }
     
     public final void updateSongsTree() {
-        Map<String, Map<String, String[]>> songs = SongsProcessor.getSongs(true);
+        updateSongsTree("");
+    }
+    
+    public final void updateSongsTree(String filter) {
+        Map<String, Map<String, String[]>> songs = new HashMap<>();
+                
+        if (filter.isEmpty()) {
+            songs = SongsProcessor.getSongs(true);
+        } else {
+            songs = SongsProcessor.getSongsFiltered(filter);
+        }
         
         DefaultTreeModel songsTreeModel = (DefaultTreeModel) songsTree.getModel();
         
@@ -112,7 +123,6 @@ public class MainFrame extends javax.swing.JFrame {
         resetSongTextPane();
     }
     
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -129,10 +139,6 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         songsTree = new javax.swing.JTree();
-        jToolBar1 = new javax.swing.JToolBar();
-        addButton = new javax.swing.JButton();
-        editButton = new javax.swing.JButton();
-        removeButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         songTextScrollPane = new javax.swing.JScrollPane();
         songTextPane = new javax.swing.JEditorPane();
@@ -145,6 +151,14 @@ public class MainFrame extends javax.swing.JFrame {
         fontSizeBox = new javax.swing.JComboBox();
         chordSchemePanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
+        jToolBar1 = new javax.swing.JToolBar();
+        addButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton();
+        removeButton = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        filterTextBox = new javax.swing.JTextField();
+        statusPanel = new javax.swing.JPanel();
+        statusLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newSongMenuItem = new javax.swing.JMenuItem();
@@ -186,57 +200,15 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(songsTree);
 
-        jToolBar1.setFloatable(false);
-        jToolBar1.setRollover(true);
-
-        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add.png"))); // NOI18N
-        addButton.setFocusable(false);
-        addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        addButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(addButton);
-
-        editButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/modify.png"))); // NOI18N
-        editButton.setEnabled(false);
-        editButton.setFocusable(false);
-        editButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        editButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(editButton);
-
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.png"))); // NOI18N
-        removeButton.setEnabled(false);
-        removeButton.setFocusable(false);
-        removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        removeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(removeButton);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
         );
 
         jSplitPane1.setLeftComponent(jPanel1);
@@ -338,7 +310,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fontSizeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 276, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 259, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chordSchemePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -350,7 +322,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(songTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+                .addComponent(songTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -362,6 +334,92 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         jSplitPane1.setRightComponent(jPanel2);
+
+        jToolBar1.setFloatable(false);
+        jToolBar1.setRollover(true);
+
+        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add.png"))); // NOI18N
+        addButton.setFocusable(false);
+        addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        addButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                addButtonMouseExited(evt);
+            }
+        });
+        addButton.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                addButtonMouseMoved(evt);
+            }
+        });
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(addButton);
+
+        editButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/modify.png"))); // NOI18N
+        editButton.setEnabled(false);
+        editButton.setFocusable(false);
+        editButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        editButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(editButton);
+
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.png"))); // NOI18N
+        removeButton.setEnabled(false);
+        removeButton.setFocusable(false);
+        removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(removeButton);
+        jToolBar1.add(jSeparator2);
+
+        filterTextBox.setToolTipText("Filter by author or title");
+        filterTextBox.setMaximumSize(new java.awt.Dimension(150, 2147483647));
+        filterTextBox.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                filterTextBoxMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                filterTextBoxMouseEntered(evt);
+            }
+        });
+        filterTextBox.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                filterTextBoxKeyReleased(evt);
+            }
+        });
+        jToolBar1.add(filterTextBox);
+
+        statusPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        statusLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        statusLabel.setText("Ready");
+
+        javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
+        statusPanel.setLayout(statusPanelLayout);
+        statusPanelLayout.setHorizontalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(statusLabel)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        statusPanelLayout.setVerticalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(statusLabel))
+        );
 
         jMenu1.setText("File");
 
@@ -421,11 +479,18 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(statusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSplitPane1)
+                .addGap(0, 0, 0)
+                .addComponent(statusPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -532,6 +597,26 @@ public class MainFrame extends javax.swing.JFrame {
     private void removeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeMenuItemActionPerformed
         removeSong();
     }//GEN-LAST:event_removeMenuItemActionPerformed
+
+    private void addButtonMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addButtonMouseMoved
+        statusLabel.setText("Add new song");
+    }//GEN-LAST:event_addButtonMouseMoved
+
+    private void addButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addButtonMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_addButtonMouseExited
+
+    private void filterTextBoxKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_filterTextBoxKeyReleased
+        updateSongsTree(filterTextBox.getText());
+    }//GEN-LAST:event_filterTextBoxKeyReleased
+
+    private void filterTextBoxMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filterTextBoxMouseEntered
+        statusLabel.setText("Filter by author or title");
+    }//GEN-LAST:event_filterTextBoxMouseEntered
+
+    private void filterTextBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filterTextBoxMouseExited
+        statusLabel.setText("Ready");
+    }//GEN-LAST:event_filterTextBoxMouseExited
     
     private void removeSong() {
         if (JOptionPane.showConfirmDialog(
@@ -592,6 +677,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel chordSchemePanel;
     private javax.swing.JButton editButton;
     private javax.swing.JMenuItem editMenuItemPopup;
+    private javax.swing.JTextField filterTextBox;
     private javax.swing.JComboBox fontSizeBox;
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JMenuItem importMenuItem;
@@ -606,6 +692,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem newSongMenuItem;
@@ -618,6 +705,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTree songsTree;
     private javax.swing.JPopupMenu songsTreePopup;
     private javax.swing.JComboBox speedBox;
+    private javax.swing.JLabel statusLabel;
+    private javax.swing.JPanel statusPanel;
     private javax.swing.JButton stopButton;
     // End of variables declaration//GEN-END:variables
 }
