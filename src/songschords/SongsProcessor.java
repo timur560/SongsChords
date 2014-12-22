@@ -103,7 +103,7 @@ public class SongsProcessor {
         Map<String, String[]> authorSongsMap = new HashMap<>();
         
         for (String author : getSongs().keySet()) {
-            if (author.contains(filter)) {
+            if (author.toLowerCase().contains(filter.toLowerCase())) {
                 songsFiltered.put(author, getSongs().get(author));
                 continue;
             }
@@ -111,7 +111,7 @@ public class SongsProcessor {
             authorSongsMap.clear();
             
             for (String title : getSongs().get(author).keySet()) {
-                if (title.contains(filter)) {
+                if (title.toLowerCase().contains(filter.toLowerCase())) {
                     authorSongsMap.put(title, getSongs().get(author).get(title));
                     continue;
                 }
